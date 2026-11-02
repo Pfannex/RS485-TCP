@@ -204,6 +204,7 @@ Ergebnis an Claude zurück. Deaktivieren/prüfen über `/hooks`.
 | 2026-11-02 | Erster Test mit FU an: **keine Antwort** (Modbus TCP + RTU, Unit 1–10, Toshiba-ASCII) bei 19200 8E1 → Verdacht Verdrahtung/Baudrate |
 | 2026-11-02 | f829 = 1 nach Neustart bestätigt. Weiter keine Antwort, Unit-Scan 1–32 + 247 leer → Protokoll/Adresse ausgeschlossen, offen: Verdrahtung, f800/f801, Gateway-TX |
 | 2026-11-02 | A+/B− getauscht → weiterhin keine Antwort (TCP + RTU, Unit 1/2/3/247). Nächste Schritte: TX-LED, f800/f801 ablesen, RJ45-Pins 4/5/8 durchmessen |
+| 2026-11-02 | Polling-Test: **TX-LED blinkt, RX-LED dunkel** → Gateway sendet, FU antwortet nicht. Offen: Leitung (Pins 4/5/8) oder f800/f801 |
 
 ## Fehlersuche: FU antwortet nicht
 
