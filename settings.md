@@ -138,7 +138,14 @@ Handbücher (Ordner `docs/`):
 - Voraussetzung: **`cmod` = 0** (Klemmenleiste). Werk laut Tabelle: `cmod` = 1 (Panel, RUN-Taste).
 - ST (Standby) ist ab Werk immer aktiv (`f110` = 6), keine extra Freigabe nötig.
 - Frequenzquelle separat über `fmod`.
-- Ist-Zustand der Anlage (Belegung F/R/CC, SW1, cmod): **noch zu prüfen**.
+- **Ist-Zustand der Anlage (2026-11-02):** **P24–F fest gebrückt** → Dauer-Startbefehl.
+  - Daraus folgt SW1 = SOURCE (noch optisch prüfen) und vermutlich `cmod` = 0.
+  - FU läuft, sobald Netz anliegt; Stopp nur über Netz aus, Trip oder STOP-Taste.
+  - **Wiederanlauf automatisch** nach Netzwiederkehr / Störungsquittierung.
+  - Frequenzquelle (`fmod`) noch unbekannt (Anzeige 48,8 Hz) → per Modbus auslesen
+    (Register 0x0003 = cmod, 0x0004 = fmod).
+  - Später HA-Steuerung: Brücke durch Relaiskontakt ersetzen **oder** Start/Stopp per
+    Modbus (`cmod` = 2 bzw. FA00 Bit 15).
 
 Quelle: E6581611 Abschnitt 2.3.2 „Control circuit terminals“, 5.x `cmod`/`fmod`.
 
