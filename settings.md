@@ -79,9 +79,11 @@ Anklemmen mit Durchgangsprüfer gegenprüfen. Weiß/braun (Pin 7 = 24 V) einzeln
 **Pin-Zählung RJ45-Stecker:** Kontakte zu dir (Verriegelung hinten), Kabel nach unten
 → **Pin 1 links, Pin 8 rechts**. Das blaue Paar liegt in der Mitte (4/5), braun ganz außen (8).
 
+- **Funktionierende Verdrahtung (getestet 2026-11-02): A+ → Pin 4, B− → Pin 5, GND → Pin 8**,
+  genau wie im Handbuch. Gegenprobe A+ → Pin 5 antwortet nicht.
 - Bei kurzer Leitung (Schaltschrank) kein Abschlusswiderstand nötig. Bei langer
   Leitung 120 Ω zwischen A+ und B− am Leitungsende.
-- Keine Antwort → zuerst A+/B− tauschen.
+- Keine Antwort → zuerst Parität/Baudrate auf beiden Seiten prüfen, dann A+/B− tauschen.
 
 Quelle: E6581913, Anhang 5 „Connecting for RS485 communication“.
 
@@ -215,6 +217,7 @@ Ergebnis an Claude zurück. Deaktivieren/prüfen über `/hooks`.
 | 2026-11-02 | **Gateway zeigt Parity NONE** – EVEN wurde offenbar nie gespeichert → Paritäts-Mismatch zum FU (Even) = wahrscheinliche Ursache |
 | 2026-11-02 | FU **f801 = 0** gesetzt (passend zu Gateway NONE). Test direkt danach: keine Antwort. FU-Neustart nötig; Polaritätstests waren wegen Paritäts-Mismatch ungültig → beide Polungen neu testen |
 | 2026-11-02 | Gateway 19200 8N1 + FU f801 = 0, beide neu gestartet → **weiterhin keine Antwort** (TCP/RTU, Unit 1/2/3/247, Toshiba-ASCII). Offen: Polung A+→4 erneut, Foto Buchse, USB-RS485-Direkttest |
+| 2026-11-02 | **ERFOLG:** A+ → Pin 4, B− → Pin 5 zurückverdrahtet, 19200 8N1 → FU antwortet. Gelesen: 0,00 Hz (Stopp), Sollwert 49,09 Hz, Status 0x4000 (Bereit), ZK-Spannung 103 %, 805 Betriebsstunden. Ursache: Gateway hatte Parity EVEN nie gespeichert (Mismatch) + falsche Polung beim Gegentest |
 
 ## Fehlersuche: FU antwortet nicht
 

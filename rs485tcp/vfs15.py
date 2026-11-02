@@ -27,6 +27,8 @@ STATUS1_BITS = {
     10: "Läuft",
     11: "ST aus (Freilauf)",
     12: "Not-Halt",
+    13: "Bereit + Startbefehl (ST/RUN an)",
+    14: "Bereit",
 }
 
 
