@@ -196,7 +196,8 @@ Testframe (RTU, Unit 1, FD00 lesen): `01 03 FD 00 00 01 B5 A6`
     „0 = Klemmleiste“) | Einheit
   - Gruppe „Monitorwerte“ + 13 Handbuch-Gruppen, 433 Parameter
   - **Checkbox vor jeder Zeile** nimmt den Wert ins Polling auf (auf Gruppenzeile: ganze
-    Gruppe). Angehakte Zeilen sind blau hinterlegt. Auswahl wird in `poll_list.json`
+    Gruppe). Gruppe teilweise angehakt → hellgrauer Haken. Angehakte Zeilen sind blau
+    hinterlegt. Auswahl wird in `poll_list.json`
     gespeichert (nicht im Git).
   - „Alle lesen“ (~9 s für 520 Werte), „Markierte lesen“; Details (Einstellbereich,
     Werkseinstellung, Auflösung, Handbuchseite) unter der Tabelle bei Auswahl

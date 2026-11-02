@@ -26,17 +26,18 @@ TICK_REGISTER = 0xFD01       # Status 1
 HERE = os.path.dirname(os.path.abspath(__file__))
 EXPORT_DIR = os.path.join(HERE, "exports")
 POLL_FILE = os.path.join(HERE, "poll_list.json")
-def checkbox_image(checked, size=13, gap=6):
-    """Kleine Checkbox-Grafik für die Treeview-Zeilen (rechts transparenter Abstand zum Text)."""
+def checkbox_image(checked, size=13, gap=6, fill="#2f5597"):
+    """Kleine Checkbox-Grafik für die Treeview-Zeilen (rechts transparenter Abstand zum Text).
+    fill: Farbe des Hakens (hellgrau für teilweise angehakte Gruppen)."""
     img = tk.PhotoImage(width=size + gap, height=size)
     img.put("#ffffff", to=(0, 0, size, size))
-    border = "#2f5597" if checked else "#7a7a7a"
+    border = fill if checked else "#7a7a7a"
     img.put(border, to=(0, 0, size, 1))
     img.put(border, to=(0, size - 1, size, size))
     img.put(border, to=(0, 0, 1, size))
     img.put(border, to=(size - 1, 0, size, size))
     if checked:
-        img.put("#2f5597", to=(2, 2, size - 2, size - 2))
+        img.put(fill, to=(2, 2, size - 2, size - 2))
         for x, y in ((3, 6), (4, 7), (5, 8), (6, 7), (7, 6), (8, 5), (9, 4)):
             img.put("#ffffff", to=(x, y, x + 1, y + 2))
     return img
@@ -219,6 +220,7 @@ class App(tk.Tk):
         ttk.Label(bar, text="Checkbox vor der Zeile = ins Polling aufnehmen").pack(side="right", padx=3)
 
         self.img_on, self.img_off = checkbox_image(True), checkbox_image(False)
+        self.img_partial = checkbox_image(True, fill="#b8b8b8")
         self.ptree = self._make_tree(tab)
 
         # Struktur: Monitorwerte als eigene Gruppe, dann die Handbuch-Gruppen in Reihenfolge.
@@ -525,7 +527,10 @@ class App(tk.Tk):
             tree.item(iid, image=self.img_on if on else self.img_off, tags=("polled",) if on else ())
         all_on = bool(children) and all(int(i[1:]) in self.poll_set for i in children)
         any_on = any(int(i[1:]) in self.poll_set for i in children)
-        tree.item(giid, image=self.img_on if all_on else self.img_off, tags=("polled",) if any_on else ())
+        all_in_group = [i for g, _t, items in self.structure if g == giid for i, _x, _u in items]
+        all_on = all_on and all(int(i[1:]) in self.poll_set for i in all_in_group)
+        image = self.img_on if all_on else self.img_partial if any_on else self.img_off
+        tree.item(giid, image=image, tags=("polled",) if any_on else ())
 
     def _on_tree_click(self, tree, event):
         """Klick auf die Checkbox (Bild vor dem Text) schaltet den Eintrag bzw. die Gruppe um."""
