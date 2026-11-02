@@ -109,7 +109,8 @@ class App(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("RS485-TCP Monitor – ET69C02 / Toshiba VF-S15")
-        self.minsize(860, 680)
+        self.minsize(1200, 700)
+        self.geometry("1500x860")
 
         self.host = tk.StringVar(value="192.168.1.69")
         self.port = tk.IntVar(value=8887)
@@ -181,10 +182,15 @@ class App(tk.Tk):
         self.last = ttk.Label(ctl, text="")
         self.last.pack(side="right", **pad)
 
-        nb = ttk.Notebook(self)
-        nb.pack(fill="both", expand=True, **pad)
+        # Links: Parameterbaum mit Checkboxen; rechts: Listen in Reitern
+        paned = ttk.PanedWindow(self, orient="horizontal")
+        paned.pack(fill="both", expand=True, **pad)
+        left = ttk.LabelFrame(paned, text="Parameter (Handbuch)")
+        paned.add(left, weight=3)
+        nb = ttk.Notebook(paned)
+        paned.add(nb, weight=2)
+        self._build_params(left)
         self._build_overview(nb)
-        self._build_params(nb)
         self._build_poll(nb)
         self._build_all(nb)
 
@@ -205,9 +211,7 @@ class App(tk.Tk):
             self.tree.insert("", "end", iid=str(address), values=(f"0x{address:04X}", name, "–"))
         self.tree.pack(fill="both", expand=True, padx=4, pady=4)
 
-    def _build_params(self, nb):
-        tab = ttk.Frame(nb)
-        nb.add(tab, text="Parameter")
+    def _build_params(self, tab):
         bar = ttk.Frame(tab)
         bar.pack(fill="x", padx=4, pady=4)
         self.btn_params = ttk.Button(bar, text="Alle lesen", command=self.read_params)
@@ -217,7 +221,6 @@ class App(tk.Tk):
         ttk.Button(bar, text="Abbrechen", command=self.abort.set).pack(side="left", padx=3)
         ttk.Button(bar, text="Alles aufklappen", command=lambda: self._expand(True)).pack(side="left", padx=3)
         ttk.Button(bar, text="Alles zuklappen", command=lambda: self._expand(False)).pack(side="left", padx=3)
-        ttk.Label(bar, text="Checkbox vor der Zeile = ins Polling aufnehmen").pack(side="right", padx=3)
 
         self.img_on, self.img_off = checkbox_image(True), checkbox_image(False)
         self.img_partial = checkbox_image(True, fill="#b8b8b8")
@@ -253,19 +256,18 @@ class App(tk.Tk):
         bar.pack(fill="x", padx=4, pady=4)
         ttk.Button(bar, text="Jetzt lesen", command=self.query).pack(side="left", padx=3)
         ttk.Button(bar, text="Polling-Liste leeren", command=self._clear_poll).pack(side="left", padx=3)
-        ttk.Label(bar, text="Inhalt = im Reiter „Parameter“ angehakte Werte; Haken entfernen nimmt sie raus"
-                  ).pack(side="right", padx=3)
-        self.poll_tree = self._make_tree(tab)
+        ttk.Label(bar, text="= links angehakte Werte").pack(side="left", padx=3)
+        self.poll_tree = self._make_tree(tab, checkable=False)
         self._rebuild_poll_tree()
 
-    def _make_tree(self, parent):
+    def _make_tree(self, parent, checkable=True):
         frame = ttk.Frame(parent)
         frame.pack(fill="both", expand=True, padx=4)
-        cols = (("hex", "Adr. HEX", 70), ("dec", "Adr. DEZ", 70), ("value", "Wert", 280),
-                ("unit", "Einheit", 70))
+        cols = (("hex", "Adr. HEX", 65), ("dec", "Adr. DEZ", 65), ("value", "Wert", 220),
+                ("unit", "Einheit", 55))
         tree = ttk.Treeview(frame, columns=[c[0] for c in cols])
         tree.heading("#0", text="Klartext / Beschreibung")
-        tree.column("#0", width=420, anchor="w")
+        tree.column("#0", width=360 if checkable else 280, anchor="w")
         for col, text, width in cols:
             tree.heading(col, text=text)
             tree.column(col, width=width, anchor="w")
@@ -274,9 +276,10 @@ class App(tk.Tk):
         tree.configure(yscrollcommand=sb.set)
         tree.pack(side="left", fill="both", expand=True)
         sb.pack(side="right", fill="y")
-        tree.bind("<Button-1>", lambda e, t=tree: self._on_tree_click(t, e))
+        if checkable:
+            tree.bind("<Button-1>", lambda e, t=tree: self._on_tree_click(t, e))
         tree.bind("<<TreeviewSelect>>", lambda _e, t=tree: self._on_tree_select(t))
-        tree.detail = ttk.Label(parent, text="", wraplength=820, justify="left")
+        tree.detail = ttk.Label(parent, text="", wraplength=600, justify="left")
         tree.detail.pack(fill="x", padx=6, pady=4)
         return tree
 
@@ -565,7 +568,6 @@ class App(tk.Tk):
             tree.insert("", "end", iid=giid, text=gtext, open=giid not in collapsed)
             for iid, text, unit in chosen:
                 tree.insert(giid, "end", iid=iid, text=text, values=self.ptree.item(iid, "values"))
-            self._refresh_marks(tree, giid)
 
     def _on_tree_select(self, tree):
         sel = tree.selection()

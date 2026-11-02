@@ -190,7 +190,9 @@ Testframe (RTU, Unit 1, FD00 lesen): `01 03 FD 00 00 01 B5 A6`
 - „Jetzt abfragen“ oder Polling mit einstellbarem Intervall: liest die Übersicht
   **plus alle im Reiter „Parameter“ markierten Werte**
 - IP, Port, Unit, Modus (tcp/rtu) im Fenster änderbar; Log unten
-- Reiter **Parameter** (Baumansicht, gruppiert wie Handbuch Kap. 11):
+- **Aufteilung:** links die Liste **Parameter (Handbuch)** mit Checkboxen, rechts die Reiter
+  **Übersicht | Polling | Alle Register (Scan)**. Trennlinie mit der Maus verschiebbar.
+- Liste **Parameter (Handbuch)** (Baumansicht, gruppiert wie Handbuch Kap. 11):
   - Spalten: ☐ Klartext/Beschreibung (Kürzel – Funktion) | Adr. HEX | Adr. DEZ |
     Wert (skaliert, z. B. `acc` 300 → 30.0 s, Auswahllisten als Klartext
     „0 = Klemmleiste“) | Einheit
@@ -205,9 +207,9 @@ Testframe (RTU, Unit 1, FD00 lesen): `01 03 FD 00 00 01 B5 A6`
     `py tools/extract_vfs15_params.py docs/VFS15_Handbuch-Langversion_032013.pdf`
     (Skalierung = Auflösung „serielle Komm.“ aus dem Handbuch). Einzelne Namen können
     durch das Tabellenlayout verrutscht sein (z. B. `thr`/`olm`).
-- Reiter **Polling**: nur die angehakten Werte, in derselben Gruppenstruktur wie der
-  Parameterbaum, Werte werden bei jedem Polling aktualisiert. Haken dort entfernen nimmt
-  den Wert aus dem Polling; „Polling-Liste leeren“ entfernt alle.
+- Reiter **Polling**: nur die links angehakten Werte, in derselben Gruppenstruktur wie der
+  Parameterbaum (ohne Checkboxen), Werte werden bei jedem Polling aktualisiert.
+  Auswahl ändern nur links; „Polling-Liste leeren“ entfernt alle.
 - Reiter **Alle Register (Scan)**:
   - „Vollscan“: alle 1500 möglichen Adressen (0000–0999 Parameter, FA00–FE99
     Monitor/Befehle), ~45 s. Nicht vorhandene Adressen (Exception 0x02) werden übersprungen.
