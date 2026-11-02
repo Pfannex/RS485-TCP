@@ -206,6 +206,7 @@ Ergebnis an Claude zurück. Deaktivieren/prüfen über `/hooks`.
 | 2026-11-02 | A+/B− getauscht → weiterhin keine Antwort (TCP + RTU, Unit 1/2/3/247). Nächste Schritte: TX-LED, f800/f801 ablesen, RJ45-Pins 4/5/8 durchmessen |
 | 2026-11-02 | Polling-Test: **TX-LED blinkt, RX-LED dunkel** → Gateway sendet, FU antwortet nicht. Offen: Leitung (Pins 4/5/8) oder f800/f801 |
 | 2026-11-02 | Messung Gateway-Klemmen A+↔B− beim Polling: **4,4 V DC, konstant** (Leitung wird getrieben; hoher Wert → evtl. offene Leitung). Nächster Schritt: Durchgangstest RJ45 Pin 4/5/8 ↔ Klemmen |
+| 2026-11-02 | 3-min-Polling: 561 Anfragen, 0 Antworten. Durchgang: A+ ↔ Pin 5, B− ↔ Pin 4 (getauschter Zustand) → Adern OK, **beide Polungen ohne Antwort getestet**. Offen: Pin 8 ↔ GND, Kurzschlusstest, f800/f801. Zurückverdrahten auf A+ → Pin 4, B− → Pin 5 |
 
 ## Fehlersuche: FU antwortet nicht
 
