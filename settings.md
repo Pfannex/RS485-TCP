@@ -208,6 +208,7 @@ Ergebnis an Claude zurück. Deaktivieren/prüfen über `/hooks`.
 | 2026-11-02 | Messung Gateway-Klemmen A+↔B− beim Polling: **4,4 V DC, konstant** (Leitung wird getrieben; hoher Wert → evtl. offene Leitung). Nächster Schritt: Durchgangstest RJ45 Pin 4/5/8 ↔ Klemmen |
 | 2026-11-02 | 3-min-Polling: 561 Anfragen, 0 Antworten. Durchgang: A+ ↔ Pin 5, B− ↔ Pin 4 (getauschter Zustand) → Adern OK, **beide Polungen ohne Antwort getestet**. Offen: Pin 8 ↔ GND, Kurzschlusstest, f800/f801. Zurückverdrahten auf A+ → Pin 4, B− → Pin 5 |
 | 2026-11-02 | Pin 8 ↔ GND Durchgang, kein Kurzschluss 4↔5 → **Leitung vollständig OK**. Gateway-Modbus-Einstellungen geprüft, OK. Offen: f800/f801/f806 am Panel ablesen |
+| 2026-11-02 | Panel abgelesen: **f800 = 4, f801 = 1, f806 = 0** (alle korrekt). Verdacht: f802 noch 0 (Broadcast → keine Antwort) |
 
 ## Fehlersuche: FU antwortet nicht
 
