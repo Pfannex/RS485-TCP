@@ -191,18 +191,22 @@ Testframe (RTU, Unit 1, FD00 lesen): `01 03 FD 00 00 01 B5 A6`
   **plus alle im Reiter „Parameter“ markierten Werte**
 - IP, Port, Unit, Modus (tcp/rtu) im Fenster änderbar; Log unten
 - Reiter **Parameter** (Baumansicht, gruppiert wie Handbuch Kap. 11):
-  - Spalten: Klartext/Beschreibung (Kürzel – Funktion) | Adr. HEX | Adr. DEZ |
+  - Spalten: ☐ Klartext/Beschreibung (Kürzel – Funktion) | Adr. HEX | Adr. DEZ |
     Wert (skaliert, z. B. `acc` 300 → 30.0 s, Auswahllisten als Klartext
-    „0 = Klemmleiste“) | Einheit | Polling ☐/☑
+    „0 = Klemmleiste“) | Einheit
   - Gruppe „Monitorwerte“ + 13 Handbuch-Gruppen, 433 Parameter
-  - Klick auf ☐ nimmt den Wert ins Polling auf (auf Gruppenzeile: ganze Gruppe).
-    Auswahl wird in `poll_list.json` gespeichert (nicht im Git).
+  - **Checkbox vor jeder Zeile** nimmt den Wert ins Polling auf (auf Gruppenzeile: ganze
+    Gruppe). Angehakte Zeilen sind blau hinterlegt. Auswahl wird in `poll_list.json`
+    gespeichert (nicht im Git).
   - „Alle lesen“ (~9 s für 520 Werte), „Markierte lesen“; Details (Einstellbereich,
     Werkseinstellung, Auflösung, Handbuchseite) unter der Tabelle bei Auswahl
   - Katalog: `rs485tcp/vfs15_params.json`, erzeugt mit
     `py tools/extract_vfs15_params.py docs/VFS15_Handbuch-Langversion_032013.pdf`
     (Skalierung = Auflösung „serielle Komm.“ aus dem Handbuch). Einzelne Namen können
     durch das Tabellenlayout verrutscht sein (z. B. `thr`/`olm`).
+- Reiter **Polling**: nur die angehakten Werte, in derselben Gruppenstruktur wie der
+  Parameterbaum, Werte werden bei jedem Polling aktualisiert. Haken dort entfernen nimmt
+  den Wert aus dem Polling; „Polling-Liste leeren“ entfernt alle.
 - Reiter **Alle Register (Scan)**:
   - „Vollscan“: alle 1500 möglichen Adressen (0000–0999 Parameter, FA00–FE99
     Monitor/Befehle), ~45 s. Nicht vorhandene Adressen (Exception 0x02) werden übersprungen.

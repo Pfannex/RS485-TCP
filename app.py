@@ -20,12 +20,26 @@ from rs485tcp.vfs15 import (MONITOR, MONITOR_ALL, STATUS1_BITS, describe, format
                             format_value, load_params, scan_addresses)
 
 GREY, GREEN, RED, ORANGE = "#9e9e9e", "#2e7d32", "#c62828", "#ef6c00"
+POLLED_BG = "#cfe3ff"        # Hintergrund markierter Zeilen
 TICK_S = 2.0                 # Lebenszeichen-Abfrage des Umrichters
 TICK_REGISTER = 0xFD01       # Status 1
 HERE = os.path.dirname(os.path.abspath(__file__))
 EXPORT_DIR = os.path.join(HERE, "exports")
 POLL_FILE = os.path.join(HERE, "poll_list.json")
-CHECK_ON, CHECK_OFF = "☑", "☐"
+def checkbox_image(checked, size=13):
+    """Kleine Checkbox-Grafik für die Treeview-Zeilen."""
+    img = tk.PhotoImage(width=size, height=size)
+    img.put("#ffffff", to=(0, 0, size, size))
+    border = "#2f5597" if checked else "#7a7a7a"
+    img.put(border, to=(0, 0, size, 1))
+    img.put(border, to=(0, size - 1, size, size))
+    img.put(border, to=(0, 0, 1, size))
+    img.put(border, to=(size - 1, 0, size, size))
+    if checked:
+        img.put("#2f5597", to=(2, 2, size - 2, size - 2))
+        for x, y in ((3, 6), (4, 7), (5, 8), (6, 7), (7, 6), (8, 5), (9, 4)):
+            img.put("#ffffff", to=(x, y, x + 1, y + 2))
+    return img
 
 
 class Lamp(tk.Canvas):
@@ -170,6 +184,7 @@ class App(tk.Tk):
         nb.pack(fill="both", expand=True, **pad)
         self._build_overview(nb)
         self._build_params(nb)
+        self._build_poll(nb)
         self._build_all(nb)
 
         logf = ttk.LabelFrame(self, text="Log")
@@ -201,44 +216,67 @@ class App(tk.Tk):
         ttk.Button(bar, text="Abbrechen", command=self.abort.set).pack(side="left", padx=3)
         ttk.Button(bar, text="Alles aufklappen", command=lambda: self._expand(True)).pack(side="left", padx=3)
         ttk.Button(bar, text="Alles zuklappen", command=lambda: self._expand(False)).pack(side="left", padx=3)
-        ttk.Button(bar, text="Polling-Liste leeren", command=self._clear_poll).pack(side="left", padx=3)
-        ttk.Label(bar, text="Klick auf ☐ = ins Polling aufnehmen").pack(side="right", padx=3)
+        ttk.Label(bar, text="Checkbox vor der Zeile = ins Polling aufnehmen").pack(side="right", padx=3)
 
-        frame = ttk.Frame(tab)
-        frame.pack(fill="both", expand=True, padx=4)
-        cols = (("hex", "Adr. HEX", 70), ("dec", "Adr. DEZ", 70), ("value", "Wert", 260),
-                ("unit", "Einheit", 70), ("poll", "Polling", 60))
-        self.ptree = ttk.Treeview(frame, columns=[c[0] for c in cols])
-        self.ptree.heading("#0", text="Klartext / Beschreibung")
-        self.ptree.column("#0", width=380, anchor="w")
-        for col, text, width in cols:
-            self.ptree.heading(col, text=text)
-            self.ptree.column(col, width=width, anchor="center" if col == "poll" else "w")
-        sb = ttk.Scrollbar(frame, orient="vertical", command=self.ptree.yview)
-        self.ptree.configure(yscrollcommand=sb.set)
-        self.ptree.pack(side="left", fill="both", expand=True)
-        sb.pack(side="right", fill="y")
-        self.ptree.bind("<Button-1>", self._on_ptree_click)
-        self.ptree.bind("<<TreeviewSelect>>", self._on_ptree_select)
-        self.detail = ttk.Label(tab, text="", wraplength=820, justify="left")
-        self.detail.pack(fill="x", padx=6, pady=4)
+        self.img_on, self.img_off = checkbox_image(True), checkbox_image(False)
+        self.ptree = self._make_tree(tab)
 
-        # Monitorwerte als eigene Gruppe, dann die Handbuch-Gruppen in Reihenfolge
-        g = self.ptree.insert("", "end", iid="g_mon", text="Monitorwerte (nur lesen)", open=False)
-        for address, (name, _s, unit) in sorted(MONITOR_ALL.items()):
-            self.ptree.insert(g, "end", iid=f"a{address}", text=name,
-                              values=(f"0x{address:04X}", address, "–", "", self._mark(address)))
+        # Struktur: Monitorwerte als eigene Gruppe, dann die Handbuch-Gruppen in Reihenfolge.
+        # self.structure = [(Gruppen-iid, Gruppentext, [(iid, Text, Einheit), ...]), ...]
+        self.structure = [("g_mon", "Monitorwerte (nur lesen)",
+                           [(f"a{a}", name, "") for a, (name, _s, _u) in sorted(MONITOR_ALL.items())])]
+        used = set(MONITOR_ALL)
         groups = {}
         for p in self.params:
-            if p["group"] not in groups:
-                groups[p["group"]] = self.ptree.insert("", "end", iid=f"g{len(groups)}",
-                                                       text=p["group"] or "Sonstige", open=False)
-            if self.ptree.exists(f"a{p['address']}"):
+            if p["address"] in used:
                 continue
+            used.add(p["address"])
+            if p["group"] not in groups:
+                groups[p["group"]] = []
+                self.structure.append((f"g{len(groups)}", p["group"] or "Sonstige", groups[p["group"]]))
             label = f"{p['title']} – {p['name']}" if p["name"] else p["title"]
-            self.ptree.insert(groups[p["group"]], "end", iid=f"a{p['address']}", text=label,
-                              values=(f"0x{p['address']:04X}", p["address"], "–", p["unit"],
-                                      self._mark(p["address"])))
+            groups[p["group"]].append((f"a{p['address']}", label, p["unit"]))
+        for giid, gtext, items in self.structure:
+            self.ptree.insert("", "end", iid=giid, text=gtext, open=False)
+            for iid, text, unit in items:
+                address = int(iid[1:])
+                self.ptree.insert(giid, "end", iid=iid, text=text,
+                                  values=(f"0x{address:04X}", address, "–", unit))
+            self._refresh_marks(self.ptree, giid)
+
+    def _build_poll(self, nb):
+        tab = ttk.Frame(nb)
+        nb.add(tab, text="Polling")
+        bar = ttk.Frame(tab)
+        bar.pack(fill="x", padx=4, pady=4)
+        ttk.Button(bar, text="Jetzt lesen", command=self.query).pack(side="left", padx=3)
+        ttk.Button(bar, text="Polling-Liste leeren", command=self._clear_poll).pack(side="left", padx=3)
+        ttk.Label(bar, text="Inhalt = im Reiter „Parameter“ angehakte Werte; Haken entfernen nimmt sie raus"
+                  ).pack(side="right", padx=3)
+        self.poll_tree = self._make_tree(tab)
+        self._rebuild_poll_tree()
+
+    def _make_tree(self, parent):
+        frame = ttk.Frame(parent)
+        frame.pack(fill="both", expand=True, padx=4)
+        cols = (("hex", "Adr. HEX", 70), ("dec", "Adr. DEZ", 70), ("value", "Wert", 280),
+                ("unit", "Einheit", 70))
+        tree = ttk.Treeview(frame, columns=[c[0] for c in cols])
+        tree.heading("#0", text="Klartext / Beschreibung")
+        tree.column("#0", width=420, anchor="w")
+        for col, text, width in cols:
+            tree.heading(col, text=text)
+            tree.column(col, width=width, anchor="w")
+        tree.tag_configure("polled", background=POLLED_BG)
+        sb = ttk.Scrollbar(frame, orient="vertical", command=tree.yview)
+        tree.configure(yscrollcommand=sb.set)
+        tree.pack(side="left", fill="both", expand=True)
+        sb.pack(side="right", fill="y")
+        tree.bind("<Button-1>", lambda e, t=tree: self._on_tree_click(t, e))
+        tree.bind("<<TreeviewSelect>>", lambda _e, t=tree: self._on_tree_select(t))
+        tree.detail = ttk.Label(parent, text="", wraplength=820, justify="left")
+        tree.detail.pack(fill="x", padx=6, pady=4)
+        return tree
 
     def _build_all(self, nb):
         tab = ttk.Frame(nb)
@@ -452,6 +490,8 @@ class App(tk.Tk):
             p = self.param_by_addr.get(address)
             text = format_param(p, raw) if p else format_value(address, raw, self.ctx)
             self.ptree.set(iid, "value", text)
+            if self.poll_tree.exists(iid):
+                self.poll_tree.set(iid, "value", text)
         if self.job == "Vollscan" or address in self.all_rows:
             area, name = describe(address)
             self.all_rows[address] = (area, name, format_value(address, raw, self.ctx), raw)
@@ -477,28 +517,55 @@ class App(tk.Tk):
 
     # --- Parameterbaum: Checkboxen & Details --------------------------------
 
-    def _mark(self, address):
-        return CHECK_ON if address in self.poll_set else CHECK_OFF
+    def _refresh_marks(self, tree, giid):
+        """Checkbox-Bild und Hervorhebung einer Gruppe und ihrer Zeilen aktualisieren."""
+        children = tree.get_children(giid)
+        for iid in children:
+            on = int(iid[1:]) in self.poll_set
+            tree.item(iid, image=self.img_on if on else self.img_off, tags=("polled",) if on else ())
+        all_on = bool(children) and all(int(i[1:]) in self.poll_set for i in children)
+        any_on = any(int(i[1:]) in self.poll_set for i in children)
+        tree.item(giid, image=self.img_on if all_on else self.img_off, tags=("polled",) if any_on else ())
 
-    def _on_ptree_click(self, event):
-        if self.ptree.identify_column(event.x) != "#5":   # Spalte "Polling"
+    def _on_tree_click(self, tree, event):
+        """Klick auf die Checkbox (Bild vor dem Text) schaltet den Eintrag bzw. die Gruppe um."""
+        if "image" not in tree.identify_element(event.x, event.y):
             return
-        iid = self.ptree.identify_row(event.y)
+        iid = tree.identify_row(event.y)
         if not iid:
             return
-        targets = self.ptree.get_children(iid) if iid.startswith("g") else [iid]
-        addrs = [int(t[1:]) for t in targets]
+        if iid.startswith("g"):
+            addrs = [int(c[1:]) for c in tree.get_children(iid)]   # im Polling-Reiter nur die gezeigten
+        else:
+            addrs = [int(iid[1:])]
         turn_on = not all(a in self.poll_set for a in addrs)
-        for t, a in zip(targets, addrs):
+        for a in addrs:
             (self.poll_set.add if turn_on else self.poll_set.discard)(a)
-            self.ptree.set(t, "poll", self._mark(a))
         self._save_poll_set()
+        for giid, _t, _items in self.structure:
+            self._refresh_marks(self.ptree, giid)
+        self._rebuild_poll_tree()
         return "break"
 
-    def _on_ptree_select(self, _event):
-        sel = self.ptree.selection()
+    def _rebuild_poll_tree(self):
+        """Reiter „Polling“: gleiche Gruppenstruktur, nur angehakte Einträge, Werte übernehmen."""
+        tree = self.poll_tree
+        before = set(tree.get_children(""))
+        collapsed = {g for g in before if not tree.item(g, "open")}
+        tree.delete(*tree.get_children(""))
+        for giid, gtext, items in self.structure:
+            chosen = [(i, t, u) for i, t, u in items if int(i[1:]) in self.poll_set]
+            if not chosen:
+                continue
+            tree.insert("", "end", iid=giid, text=gtext, open=giid not in collapsed)
+            for iid, text, unit in chosen:
+                tree.insert(giid, "end", iid=iid, text=text, values=self.ptree.item(iid, "values"))
+            self._refresh_marks(tree, giid)
+
+    def _on_tree_select(self, tree):
+        sel = tree.selection()
         if not sel or not sel[0].startswith("a"):
-            self.detail.configure(text="")
+            tree.detail.configure(text="")
             return
         address = int(sel[0][1:])
         p = self.param_by_addr.get(address)
@@ -511,18 +578,18 @@ class App(tk.Tk):
             text = f"Monitor 0x{address:04X} / {address} – {name} {unit}"
         if address in self.ctx:
             text += f"   |   Rohwert {self.ctx[address]} (0x{self.ctx[address]:04X})"
-        self.detail.configure(text=text)
+        tree.detail.configure(text=text)
 
     def _expand(self, state):
         for g in self.ptree.get_children(""):
             self.ptree.item(g, open=state)
 
     def _clear_poll(self):
-        for a in list(self.poll_set):
-            if self.ptree.exists(f"a{a}"):
-                self.ptree.set(f"a{a}", "poll", CHECK_OFF)
         self.poll_set.clear()
         self._save_poll_set()
+        for giid, _t, _items in self.structure:
+            self._refresh_marks(self.ptree, giid)
+        self._rebuild_poll_tree()
 
     def _load_poll_set(self):
         try:
