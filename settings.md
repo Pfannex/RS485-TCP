@@ -175,7 +175,14 @@ Testframe (RTU, Unit 1, FD00 lesen): `01 03 FD 00 00 01 B5 A6`
 
 ---
 
-## 7. Kommunikationscheck
+## 7. Monitor-App & Kommunikationscheck
+
+**GUI:** `py app.py` (oder Doppelklick, ohne Konsole: `pyw app.py`)
+- Status-Lampen Gateway / Umrichter (grün = OK, rot = Fehler, grau = unbekannt)
+- „Jetzt abfragen“ oder Polling mit einstellbarem Intervall
+- IP, Port, Unit, Modus (tcp/rtu) im Fenster änderbar; Werte-Tabelle und Log
+
+**Kommandozeile:**
 
 ```
 py comcheck.py                       # 192.168.1.69:8887, Unit 1, Modbus TCP

@@ -33,6 +33,15 @@ class ModbusException(ModbusError):
         super().__init__(f"Exception 0x{code:02X} ({text}) auf Funktion 0x{function:02X}")
 
 
+def check_port(host, port, timeout=2.0):
+    """True, wenn ein TCP-Verbindungsaufbau gelingt."""
+    try:
+        with socket.create_connection((host, port), timeout=timeout):
+            return True
+    except OSError:
+        return False
+
+
 def crc16(data: bytes) -> int:
     crc = 0xFFFF
     for b in data:

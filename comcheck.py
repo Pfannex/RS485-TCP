@@ -13,16 +13,8 @@ import socket
 import sys
 import time
 
-from rs485tcp.modbus_client import ModbusClient, ModbusError, ModbusException
+from rs485tcp.modbus_client import ModbusClient, ModbusError, ModbusException, check_port
 from rs485tcp.vfs15 import MONITOR, format_value
-
-
-def check_port(host, port, timeout):
-    try:
-        with socket.create_connection((host, port), timeout=timeout):
-            return True
-    except OSError:
-        return False
 
 
 def main():

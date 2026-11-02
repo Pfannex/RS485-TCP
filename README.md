@@ -9,7 +9,16 @@ PC / Home Assistant ──Ethernet──> ET69C02 (Modbus TCP ↔ RTU) ──RS4
 
 No external dependencies, Python 3.8+.
 
-## Communication check
+## Monitor app (GUI)
+
+```
+py app.py
+```
+
+Status lamps for gateway and inverter, query on button press or cyclic polling,
+register table and log. Host, port, unit and mode (tcp/rtu) are editable in the window.
+
+## Communication check (CLI)
 
 ```
 py comcheck.py                                   # defaults: 192.168.1.69:8887, unit 1
