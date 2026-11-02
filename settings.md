@@ -182,13 +182,28 @@ Testframe (RTU, Unit 1, FD00 lesen): `01 03 FD 00 00 01 B5 A6`
 ## 7. Monitor-App & Kommunikationscheck
 
 **GUI:** `py app.py`, ohne Konsole: `start_app.cmd` (Doppelklick) oder Verknüpfung „RS485-TCP Monitor“ auf dem Desktop
-- Status-Lampen Gateway / Umrichter (grün = OK, rot = Fehler, grau = unbekannt)
-- Gateway wird automatisch alle 3 s geprüft (Modbus-Port + Web-Port 80)
-- „Jetzt abfragen“ oder Polling mit einstellbarem Intervall
-- IP, Port, Unit, Modus (tcp/rtu) im Fenster änderbar; Werte-Tabelle und Log
-- Option „alle Monitore mitlesen“: Polling liest zusätzlich alle ~75 Monitor-Register
-- Reiter **Alle Register**:
-  - „Alle Monitore lesen“: alle dokumentierten Monitor-/Befehlsregister (~2,5 s)
+- **Verbinden / Trennen**: eine dauerhafte TCP-Verbindung zum Gateway (von allen
+  Abfragen gemeinsam genutzt). Solange verbunden, liest die App alle 2 s **Status 1
+  (0xFD01)** als Lebenszeichen → Umrichter-Lampe grün „online – Bereit (17 ms)“,
+  orange bei Störung/Alarm, rot bei Timeout; Gateway-Lampe rot, wenn TCP abbricht.
+- Status-Lampen: grün = OK, orange = FU meldet Störung/Alarm, rot = Fehler, grau = getrennt
+- „Jetzt abfragen“ oder Polling mit einstellbarem Intervall: liest die Übersicht
+  **plus alle im Reiter „Parameter“ markierten Werte**
+- IP, Port, Unit, Modus (tcp/rtu) im Fenster änderbar; Log unten
+- Reiter **Parameter** (Baumansicht, gruppiert wie Handbuch Kap. 11):
+  - Spalten: Klartext/Beschreibung (Kürzel – Funktion) | Adr. HEX | Adr. DEZ |
+    Wert (skaliert, z. B. `acc` 300 → 30.0 s, Auswahllisten als Klartext
+    „0 = Klemmleiste“) | Einheit | Polling ☐/☑
+  - Gruppe „Monitorwerte“ + 13 Handbuch-Gruppen, 433 Parameter
+  - Klick auf ☐ nimmt den Wert ins Polling auf (auf Gruppenzeile: ganze Gruppe).
+    Auswahl wird in `poll_list.json` gespeichert (nicht im Git).
+  - „Alle lesen“ (~9 s für 520 Werte), „Markierte lesen“; Details (Einstellbereich,
+    Werkseinstellung, Auflösung, Handbuchseite) unter der Tabelle bei Auswahl
+  - Katalog: `rs485tcp/vfs15_params.json`, erzeugt mit
+    `py tools/extract_vfs15_params.py docs/VFS15_Handbuch-Langversion_032013.pdf`
+    (Skalierung = Auflösung „serielle Komm.“ aus dem Handbuch). Einzelne Namen können
+    durch das Tabellenlayout verrutscht sein (z. B. `thr`/`olm`).
+- Reiter **Alle Register (Scan)**:
   - „Vollscan“: alle 1500 möglichen Adressen (0000–0999 Parameter, FA00–FE99
     Monitor/Befehle), ~45 s. Nicht vorhandene Adressen (Exception 0x02) werden übersprungen.
     Ergebnis 2026-11-02: **841 lesbare Register** (501 Parameter, 336 Monitor, 4 Befehl).
@@ -197,6 +212,8 @@ Testframe (RTU, Unit 1, FD00 lesen): `01 03 FD 00 00 01 B5 A6`
 - Strom/Spannung werden zusätzlich in A/V umgerechnet, sobald Nennstrom (FE70) und
   Nennspannung (FE71) gelesen wurden (Nennstrom 9,5 A, Nennspannung 400 V).
 - Parameter werden nur **gelesen**, die App schreibt nichts.
+- Ist-Werte FU (gelesen 2026-11-02): `cmod` = 0 (Klemmleiste), `fmod` = 1 (Klemme VIA →
+  Sollwert analog), `acc` = 30,0 s, `dec` = 10,0 s, `ul` = 60,00 Hz, `vlv` = 400 V.
 
 **Kommandozeile:**
 

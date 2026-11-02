@@ -104,7 +104,7 @@ PARAM_TITLES = {
     0x0013: "ul", 0x0014: "ll", 0x0016: "vb", 0x0017: "olm", 0x0018: "sr1",
     0x0019: "sr2", 0x0020: "sr3", 0x0021: "sr4", 0x0022: "sr5", 0x0023: "sr6",
     0x0024: "sr7", 0x0025: "fpid", 0x0030: "sr0", 0x0050: "psel", 0x0090: "aua",
-    0x0093: "auf", 0x0094: "aul", 0x0099: "set", 0x0409: "vl", 0x0600: "thr",
+    0x0093: "auf", 0x0094: "aul", 0x0099: "set", 0x0409: "vlv", 0x0600: "thr",
 }
 
 PARAM_NOTES = {
@@ -134,8 +134,45 @@ STATUS1_BITS = {
 }
 
 
+def load_params():
+    """Parameterkatalog aus dem Handbuch (erzeugt von tools/extract_vfs15_params.py)."""
+    import json
+    import os
+    path = os.path.join(os.path.dirname(__file__), "vfs15_params.json")
+    with open(path, encoding="utf-8") as f:
+        params = json.load(f)
+    for p in params:
+        p["address"] = int(p["comm"], 16)
+    return params
+
+
+def format_param(p, raw):
+    """Rohwert eines Katalog-Parameters skaliert bzw. als Klartext."""
+    if p.get("signed") and raw >= 0x8000:
+        raw -= 0x10000
+    label = p.get("options", {}).get(str(raw))
+    if label:
+        return f"{raw} = {label}"
+    scale = p.get("scale")
+    if scale:
+        decimals = 2 if scale < 0.1 else 1 if scale < 1 else 0
+        return f"{raw * scale:.{decimals}f}"
+    return str(raw)
+
+
+_CATALOG_TITLES = None
+
+
 def param_title(address):
-    """Panel-Kürzel eines Parameters (0x0000–0x0999)."""
+    """Panel-Kürzel eines Parameters (0x0000–0x0999), bevorzugt aus dem Handbuch-Katalog."""
+    global _CATALOG_TITLES
+    if _CATALOG_TITLES is None:
+        try:
+            _CATALOG_TITLES = {p["address"]: p["title"] for p in load_params()}
+        except OSError:
+            _CATALOG_TITLES = {}
+    if address in _CATALOG_TITLES:
+        return _CATALOG_TITLES[address]
     if address in PARAM_TITLES:
         return PARAM_TITLES[address]
     if 0x0100 <= address <= 0x0999:

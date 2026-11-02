@@ -10,3 +10,6 @@ exports/
 
 # Windows-Verknüpfung (enthält lokale Pfade)
 *.lnk
+
+# Persönliche Polling-Auswahl der App
+poll_list.json
