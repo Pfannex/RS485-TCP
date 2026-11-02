@@ -207,6 +207,7 @@ Ergebnis an Claude zurück. Deaktivieren/prüfen über `/hooks`.
 | 2026-11-02 | Polling-Test: **TX-LED blinkt, RX-LED dunkel** → Gateway sendet, FU antwortet nicht. Offen: Leitung (Pins 4/5/8) oder f800/f801 |
 | 2026-11-02 | Messung Gateway-Klemmen A+↔B− beim Polling: **4,4 V DC, konstant** (Leitung wird getrieben; hoher Wert → evtl. offene Leitung). Nächster Schritt: Durchgangstest RJ45 Pin 4/5/8 ↔ Klemmen |
 | 2026-11-02 | 3-min-Polling: 561 Anfragen, 0 Antworten. Durchgang: A+ ↔ Pin 5, B− ↔ Pin 4 (getauschter Zustand) → Adern OK, **beide Polungen ohne Antwort getestet**. Offen: Pin 8 ↔ GND, Kurzschlusstest, f800/f801. Zurückverdrahten auf A+ → Pin 4, B− → Pin 5 |
+| 2026-11-02 | Pin 8 ↔ GND Durchgang, kein Kurzschluss 4↔5 → **Leitung vollständig OK**. Gateway-Modbus-Einstellungen geprüft, OK. Offen: f800/f801/f806 am Panel ablesen |
 
 ## Fehlersuche: FU antwortet nicht
 
@@ -216,3 +217,4 @@ Ergebnis an Claude zurück. Deaktivieren/prüfen über `/hooks`.
 4. Am Panel prüfen: f800 = 4, f801 = 1 (passend zum Gateway).
 5. f829 = 1, f802 = 1 gesetzt **und** FU danach aus/ein geschaltet.
 6. Antwortet der FU auf Toshiba-ASCII `(RFD00)\r`, stimmt die Physik und nur f829 fehlt.
+7. **f806** (Master/Slave Inter-Drive) muss 0/1/2 sein. Bei 3/4 ist der FU Master und antwortet nicht.
