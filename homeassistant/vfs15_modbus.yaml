@@ -1,0 +1,209 @@
+# VORLAGE – Home Assistant Package: Toshiba VF-S15 über eletechsup ET69C02 (Modbus TCP -> RTU)
+# Nicht in einer HA-Instanz getestet. Host/Port/Namen/Intervalle nach Bedarf anpassen.
+#
+# Einbinden z. B. als Package (configuration.yaml):
+#   homeassistant:
+#     packages:
+#       vfs15: !include packages/vfs15_modbus.yaml
+#
+# Grundlagen, Registerliste und Randbedingungen: INTERFACE.md in diesem Repository.
+#  - Nur EIN Modbus-Client gleichzeitig am Gateway (Antworten gehen an alle Clients).
+#  - Jedes Register einzeln lesen (Blockabfragen überspringen Adresslücken).
+#  - Nur Lesen, keine Schreibzugriffe.
+
+modbus:
+  - name: vfs15_gateway
+    type: tcp                    # Gateway wandelt Modbus TCP -> RTU
+    host: 192.168.1.69           # DHCP-Reservierung für MAC DC:32:62:B0:27:60
+    port: 8887                   # "Local port" im Gateway (nicht 502)
+    timeout: 3
+    delay: 0
+    message_wait_milliseconds: 30
+    sensors:
+      # --- schnell ---------------------------------------------------------------
+      - name: "VF-S15 Status 1"
+        unique_id: vfs15_status_1
+        device_address: 1
+        address: 64769           # 0xFD01, Bitfeld -> Template-Binärsensoren unten
+        input_type: holding
+        data_type: uint16
+        scan_interval: 2
+
+      - name: "VF-S15 Ausgangsfrequenz"
+        unique_id: vfs15_output_frequency
+        device_address: 1
+        address: 64768           # 0xFD00
+        input_type: holding
+        data_type: uint16
+        scale: 0.01
+        precision: 2
+        unit_of_measurement: Hz
+        device_class: frequency
+        state_class: measurement
+        scan_interval: 2
+
+      - name: "VF-S15 Frequenz-Sollwert"
+        unique_id: vfs15_frequency_setpoint
+        device_address: 1
+        address: 64770           # 0xFD02
+        input_type: holding
+        data_type: uint16
+        scale: 0.01
+        precision: 2
+        unit_of_measurement: Hz
+        device_class: frequency
+        state_class: measurement
+        scan_interval: 5
+
+      - name: "VF-S15 Ausgangsstrom"
+        unique_id: vfs15_output_current
+        device_address: 1
+        address: 64771           # 0xFD03, Rohwert 0,01 % vom Nennstrom 9,5 A
+        input_type: holding
+        data_type: uint16
+        scale: 0.00095           # 0,01 % * 9,5 A / 100
+        precision: 2
+        unit_of_measurement: A
+        device_class: current
+        state_class: measurement
+        scan_interval: 2
+
+      - name: "VF-S15 Ausgangsspannung"
+        unique_id: vfs15_output_voltage
+        device_address: 1
+        address: 64773           # 0xFD05, Rohwert 0,01 % (Annahme: Bezug 400 V)
+        input_type: holding
+        data_type: uint16
+        scale: 0.04              # 0,01 % * 400 V / 100
+        precision: 0
+        unit_of_measurement: V
+        device_class: voltage
+        state_class: measurement
+        scan_interval: 5
+
+      - name: "VF-S15 Zwischenkreisspannung"
+        unique_id: vfs15_dc_bus_voltage_percent
+        device_address: 1
+        address: 64772           # 0xFD04
+        input_type: holding
+        data_type: uint16
+        scale: 0.01
+        precision: 1
+        unit_of_measurement: "%"
+        state_class: measurement
+        scan_interval: 10
+
+      - name: "VF-S15 Eingangsleistung"
+        unique_id: vfs15_input_power
+        device_address: 1
+        address: 64809           # 0xFD29
+        input_type: holding
+        data_type: uint16
+        scale: 0.01
+        precision: 2
+        unit_of_measurement: kW
+        device_class: power
+        state_class: measurement
+        scan_interval: 5
+
+      - name: "VF-S15 Ausgangsleistung"
+        unique_id: vfs15_output_power
+        device_address: 1
+        address: 64816           # 0xFD30
+        input_type: holding
+        data_type: uint16
+        scale: 0.01
+        precision: 2
+        unit_of_measurement: kW
+        device_class: power
+        state_class: measurement
+        scan_interval: 5
+
+      - name: "VF-S15 Drehmoment"
+        unique_id: vfs15_torque
+        device_address: 1
+        address: 64792           # 0xFD18
+        input_type: holding
+        data_type: int16
+        scale: 0.01
+        precision: 1
+        unit_of_measurement: "%"
+        state_class: measurement
+        scan_interval: 5
+
+      - name: "VF-S15 Motorlast"
+        unique_id: vfs15_motor_load
+        device_address: 1
+        address: 64806           # 0xFD26
+        input_type: holding
+        data_type: uint16
+        unit_of_measurement: "%"
+        state_class: measurement
+        scan_interval: 5
+
+      - name: "VF-S15 Motordrehzahl"
+        unique_id: vfs15_motor_speed
+        device_address: 1
+        address: 64912           # 0xFD90
+        input_type: holding
+        data_type: uint16
+        unit_of_measurement: "min⁻¹"
+        state_class: measurement
+        scan_interval: 5
+
+      - name: "VF-S15 Störungscode"
+        unique_id: vfs15_trip_code
+        device_address: 1
+        address: 64656           # 0xFC90, 0 = keine Störung
+        input_type: holding
+        data_type: uint16
+        scan_interval: 5
+
+      # --- langsam ---------------------------------------------------------------
+      - name: "VF-S15 Betriebsstunden"
+        unique_id: vfs15_operating_hours
+        device_address: 1
+        address: 65044           # 0xFE14
+        input_type: holding
+        data_type: uint16
+        unit_of_measurement: h
+        device_class: duration
+        state_class: total_increasing
+        scan_interval: 60
+
+      - name: "VF-S15 Energie Eingang"
+        unique_id: vfs15_energy_in
+        device_address: 1
+        address: 65142           # 0xFE76, Einheit über f749 (aktuell 1 -> 1 kWh)
+        input_type: holding
+        data_type: uint16
+        unit_of_measurement: kWh
+        device_class: energy
+        state_class: total_increasing
+        scan_interval: 60
+
+template:
+  - binary_sensor:
+      - name: "VF-S15 läuft"
+        unique_id: vfs15_running
+        device_class: running
+        state: "{{ (states('sensor.vf_s15_status_1') | int(0)) | bitwise_and(1024) > 0 }}"   # Bit 10
+        availability: "{{ has_value('sensor.vf_s15_status_1') }}"
+      - name: "VF-S15 Störung"
+        unique_id: vfs15_trip
+        device_class: problem
+        state: "{{ (states('sensor.vf_s15_status_1') | int(0)) | bitwise_and(2) > 0 }}"      # Bit 1
+        availability: "{{ has_value('sensor.vf_s15_status_1') }}"
+      - name: "VF-S15 Alarm"
+        unique_id: vfs15_alarm
+        device_class: problem
+        state: "{{ (states('sensor.vf_s15_status_1') | int(0)) | bitwise_and(4) > 0 }}"      # Bit 2
+        availability: "{{ has_value('sensor.vf_s15_status_1') }}"
+      - name: "VF-S15 bereit"
+        unique_id: vfs15_ready
+        state: "{{ (states('sensor.vf_s15_status_1') | int(0)) | bitwise_and(16384) > 0 }}"  # Bit 14
+        availability: "{{ has_value('sensor.vf_s15_status_1') }}"
+      - name: "VF-S15 erreichbar"
+        unique_id: vfs15_online
+        device_class: connectivity
+        state: "{{ has_value('sensor.vf_s15_status_1') }}"

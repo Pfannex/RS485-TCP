@@ -68,7 +68,7 @@ def main():
         print(f"    {e}")
         return 2
 
-    # 3) Werte lesen (der VF-S15 liefert nur ein Register pro Anfrage)
+    # 3) Werte lesen (einzeln: Blockabfragen überspringen beim VF-S15 Adresslücken)
     print("[3] Werte:")
     errors = 0
     for address, (name, _scale, _unit) in MONITOR.items():

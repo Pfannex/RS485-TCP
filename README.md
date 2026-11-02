@@ -9,6 +9,15 @@ PC / Home Assistant ──Ethernet──> ET69C02 (Modbus TCP ↔ RTU) ──RS4
 
 No external dependencies, Python 3.8+.
 
+## For clients (Home Assistant etc.): read [INTERFACE.md](INTERFACE.md)
+
+Everything a Modbus client needs (German): host/port/unit, register map with scaling,
+status bits, parameter catalog, timing, **one-client-only limitation** of the gateway.
+Home Assistant template: [homeassistant/vfs15_modbus.yaml](homeassistant/vfs15_modbus.yaml).
+
+Quick facts: Modbus TCP · `192.168.1.69:8887` · unit 1 · function 0x03 · read one register
+per request · address = Toshiba communication number (e.g. output frequency `0xFD00`).
+
 ## Monitor app (GUI)
 
 ```
@@ -31,7 +40,7 @@ reads the main monitor registers (frequency, status, current, voltages, trip cod
 
 ## Setup
 
-Wiring, gateway configuration and inverter parameters (`f829 = 1`, `f802 = 1`, 19200 8E1)
+Wiring, gateway configuration and inverter parameters (`f829 = 1`, `f802 = 1`, 19200 8N1)
 are documented in [settings.md](settings.md) (German).
 
 ## Manuals

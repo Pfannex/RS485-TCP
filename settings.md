@@ -157,7 +157,8 @@ Quelle: E6581611 Abschnitt 2.3.2 „Control circuit terminals“, 5.x `cmod`/`fm
 
 ## 6. Modbus-Register VF-S15
 
-Funktion **03** (Read Holding), **immer nur 1 Register pro Anfrage** (VF-S15-Einschränkung).
+Funktion **03** (Read Holding), **1 Register pro Anfrage empfohlen** (max. 8; Blockabfragen überspringen
+nicht vorhandene Adressen, siehe INTERFACE.md).
 Registeradresse = Toshiba-Kommunikationsnummer (hex).
 
 | Adresse | Dez | Wert | Einheit |

@@ -82,7 +82,7 @@ class ModbusClient:
     # --- Funktionen -------------------------------------------------------
 
     def read_holding(self, address, count=1):
-        """Funktion 0x03. Der VF-S15 erlaubt nur count=1."""
+        """Funktion 0x03. VF-S15: max. 8 Register, Blockabfragen überspringen Adresslücken."""
         pdu = struct.pack(">BHH", 0x03, address, count)
         resp = self._transact(pdu)
         if len(resp) < 2 or resp[1] != 2 * count:
