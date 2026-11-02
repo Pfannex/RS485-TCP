@@ -32,7 +32,7 @@ Mitschnitt mit Wireshark auf dem LAN-Port, Board neu starten → ARP-Probe zeigt
 | Network | Local port | 8887 |
 | Serial | Baud rate | **19200** |
 | Serial | Data bit | **8** |
-| Serial | Parity | **EVEN** |
+| Serial | Parity | **NONE** (FU f801 = 0) |
 | Serial | Stop bit | **1** |
 | Serial | Flow | NONE |
 | MODBUS | MODBUS TCP to RTU | **Open** |
@@ -98,7 +98,7 @@ Gerät: Toshiba TOSVERT **VF-S15**, 3 × 380–500 V, 3,7/4,0 kW (5 HP), vermutl
 | **f829** | Kommunikationsprotokoll | 0 = Toshiba | **1 = Modbus RTU** | nach Aus/Ein |
 | **f802** | Umrichter-Nummer (Slave-ID) | 0 (= Broadcast, keine Antwort!) | **1** | sofort |
 | f800 | Baudrate | 4 = 19200 | **4** (unverändert) | nach Aus/Ein |
-| f801 | Parität | 1 = Even | **1** (unverändert) | nach Aus/Ein |
+| f801 | Parität | 1 = Even | **0 = None** (geändert 2026-11-02, Gateway läuft auf 8N1) | nach Aus/Ein |
 | f803 | Kommunikations-Timeout | 0.0 = aus | **0.0** (aus lassen) | – |
 
 f803 nicht aktivieren: Bei Verbindungsverlust würde der FU sonst Alarm/Trip auslösen.
@@ -114,7 +114,7 @@ Für reines Auslesen bleiben `cmod` / `fmod` unverändert (Steuerung weiter übe
 5. Rad drehen bis **`f829`** → Mitte drücken (aktueller Wert wird angezeigt).
 6. Rad auf **`1`** drehen → Mitte drücken zum **Speichern** (Anzeige wechselt `f829` / `1`).
 7. Rad drehen bis **`f802`** → Mitte drücken → auf **`1`** → Mitte drücken.
-8. Kontrolle: `f800` = 4, `f801` = 1.
+8. Kontrolle: `f800` = 4, `f801` = 0 (keine Parität, passend zum Gateway).
 9. Mehrmals **MODE** → zurück zur Frequenzanzeige.
 10. **FU komplett ausschalten**, warten bis Anzeige aus ist, wieder einschalten.
 
@@ -213,6 +213,7 @@ Ergebnis an Claude zurück. Deaktivieren/prüfen über `/hooks`.
 | 2026-11-02 | Panel abgelesen: **f800 = 4, f801 = 1, f806 = 0** (alle korrekt). Verdacht: f802 noch 0 (Broadcast → keine Antwort) |
 | 2026-11-02 | **f802 = 1** bestätigt → alle FU-Parameter korrekt. Nächste Tests: Parität aus (f801 = 0 + Gateway NONE), Foto Buchse, ggf. USB-RS485-Adapter direkt am FU |
 | 2026-11-02 | **Gateway zeigt Parity NONE** – EVEN wurde offenbar nie gespeichert → Paritäts-Mismatch zum FU (Even) = wahrscheinliche Ursache |
+| 2026-11-02 | FU **f801 = 0** gesetzt (passend zu Gateway NONE). Test direkt danach: keine Antwort. FU-Neustart nötig; Polaritätstests waren wegen Paritäts-Mismatch ungültig → beide Polungen neu testen |
 
 ## Fehlersuche: FU antwortet nicht
 
