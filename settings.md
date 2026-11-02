@@ -40,7 +40,9 @@ Mitschnitt mit Wireshark auf dem LAN-Port, Board neu starten → ARP-Probe zeigt
 | MODBUS | address filter | 0 |
 | MODBUS | Modbus timeout | 1000 ms |
 
-Nach Änderungen: **submit**, dann **Reboot**.
+Nach Änderungen: **submit**, dann **Reboot**, danach **Seite neu laden (F5) und prüfen**,
+ob die Werte wirklich übernommen wurden. Ohne submit + Reboot verwirft das Gateway
+Änderungen (so ist Parity EVEN anfangs verloren gegangen).
 
 Gerätedaten: Modell ET01, Version 9013-8-17, SN S5203122C.
 
@@ -210,6 +212,7 @@ Ergebnis an Claude zurück. Deaktivieren/prüfen über `/hooks`.
 | 2026-11-02 | Pin 8 ↔ GND Durchgang, kein Kurzschluss 4↔5 → **Leitung vollständig OK**. Gateway-Modbus-Einstellungen geprüft, OK. Offen: f800/f801/f806 am Panel ablesen |
 | 2026-11-02 | Panel abgelesen: **f800 = 4, f801 = 1, f806 = 0** (alle korrekt). Verdacht: f802 noch 0 (Broadcast → keine Antwort) |
 | 2026-11-02 | **f802 = 1** bestätigt → alle FU-Parameter korrekt. Nächste Tests: Parität aus (f801 = 0 + Gateway NONE), Foto Buchse, ggf. USB-RS485-Adapter direkt am FU |
+| 2026-11-02 | **Gateway zeigt Parity NONE** – EVEN wurde offenbar nie gespeichert → Paritäts-Mismatch zum FU (Even) = wahrscheinliche Ursache |
 
 ## Fehlersuche: FU antwortet nicht
 
