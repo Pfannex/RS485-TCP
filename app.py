@@ -15,6 +15,7 @@ from rs485tcp.modbus_client import ModbusClient, ModbusError, ModbusException, c
 from rs485tcp.vfs15 import MONITOR, format_value
 
 GREY, GREEN, RED, ORANGE = "#9e9e9e", "#2e7d32", "#c62828", "#ef6c00"
+HEARTBEAT_S = 3.0
 
 
 class Lamp(tk.Canvas):
@@ -43,8 +44,11 @@ class App(tk.Tk):
         self.busy = False
         self.poll_job = None
 
+        self.gw_online = None
+
         self._build()
         self.after(100, self._drain)
+        self.after(200, self._heartbeat)
 
     # --- UI ---------------------------------------------------------------
 
@@ -108,6 +112,29 @@ class App(tk.Tk):
         self.log.see("end")
         self.log.configure(state="disabled")
 
+    # --- Gateway-Heartbeat ------------------------------------------------
+
+    def _heartbeat(self):
+        """Prüft das Gateway zyklisch, unabhängig von Umrichter-Abfragen."""
+        if not self.busy:
+            try:
+                host, port = self.host.get().strip(), self.port.get()
+            except tk.TclError:
+                host = None
+            if host:
+                threading.Thread(target=self._heartbeat_worker, args=(host, port), daemon=True).start()
+        self.after(int(HEARTBEAT_S * 1000), self._heartbeat)
+
+    def _heartbeat_worker(self, host, port):
+        modbus = check_port(host, port, 1.5)
+        web = check_port(host, 80, 1.5)
+        if modbus:
+            self.results.put(("gateway", True, f"online – Modbus-Port {port} offen"))
+        elif web:
+            self.results.put(("gateway", False, f"online, aber Port {port} zu (Local port prüfen)"))
+        else:
+            self.results.put(("gateway", False, f"offline – {host} nicht erreichbar"))
+
     # --- Abfrage ----------------------------------------------------------
 
     def query(self):
@@ -160,8 +187,9 @@ class App(tk.Tk):
             if kind == "gateway":
                 self.gw_lamp.set(GREEN if a else RED)
                 self.gw_text.configure(text=b)
-                if not a:
+                if a != self.gw_online:
                     self._log(f"Gateway: {b}")
+                    self.gw_online = a
             elif kind == "fu":
                 self.fu_lamp.set(GREY if a is None else GREEN if a else RED)
                 self.fu_text.configure(text=b)

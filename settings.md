@@ -179,6 +179,7 @@ Testframe (RTU, Unit 1, FD00 lesen): `01 03 FD 00 00 01 B5 A6`
 
 **GUI:** `py app.py` (oder Doppelklick, ohne Konsole: `pyw app.py`)
 - Status-Lampen Gateway / Umrichter (grün = OK, rot = Fehler, grau = unbekannt)
+- Gateway wird automatisch alle 3 s geprüft (Modbus-Port + Web-Port 80)
 - „Jetzt abfragen“ oder Polling mit einstellbarem Intervall
 - IP, Port, Unit, Modus (tcp/rtu) im Fenster änderbar; Werte-Tabelle und Log
 
