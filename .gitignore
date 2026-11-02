@@ -7,3 +7,6 @@ docs/*.pdf
 
 # CSV-Exporte der App (enthalten Anlagendaten)
 exports/
+
+# Windows-Verknüpfung (enthält lokale Pfade)
+*.lnk

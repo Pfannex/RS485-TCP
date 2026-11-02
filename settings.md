@@ -181,7 +181,7 @@ Testframe (RTU, Unit 1, FD00 lesen): `01 03 FD 00 00 01 B5 A6`
 
 ## 7. Monitor-App & Kommunikationscheck
 
-**GUI:** `py app.py` (oder Doppelklick, ohne Konsole: `pyw app.py`)
+**GUI:** `py app.py`, ohne Konsole: `start_app.cmd` (Doppelklick) oder Verknüpfung „RS485-TCP Monitor“ auf dem Desktop
 - Status-Lampen Gateway / Umrichter (grün = OK, rot = Fehler, grau = unbekannt)
 - Gateway wird automatisch alle 3 s geprüft (Modbus-Port + Web-Port 80)
 - „Jetzt abfragen“ oder Polling mit einstellbarem Intervall
