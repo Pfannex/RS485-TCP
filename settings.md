@@ -70,8 +70,12 @@ RS485-Buchse am VF-S15 = **RJ45** (Patchkabel abschneiden, nur 3 Adern nutzen).
 | 7 | P24 (24 V) | **nicht anschließen!** | weiß-braun |
 | 1, 2, 3, 6 | – | nicht anschließen | |
 
-\* Farben gelten für ein Patchkabel nach T568B (Standard). Vor dem Anklemmen mit
-Durchgangsprüfer gegenprüfen.
+\* Pin 4 (blau), 5 (weiß/blau), 7 (weiß/braun) und 8 (braun) sind bei **T568A und T568B
+identisch**: Die Farben gelten also unabhängig vom Crimp-Standard. Trotzdem vor dem
+Anklemmen mit Durchgangsprüfer gegenprüfen. Weiß/braun (Pin 7 = 24 V) einzeln isolieren.
+
+**Pin-Zählung RJ45-Stecker:** Kontakte zu dir (Verriegelung hinten), Kabel nach unten
+→ **Pin 1 links, Pin 8 rechts**. Das blaue Paar liegt in der Mitte (4/5), braun ganz außen (8).
 
 - Bei kurzer Leitung (Schaltschrank) kein Abschlusswiderstand nötig. Bei langer
   Leitung 120 Ω zwischen A+ und B− am Leitungsende.
