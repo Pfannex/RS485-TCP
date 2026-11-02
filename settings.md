@@ -182,6 +182,10 @@ py comcheck.py                       # 192.168.1.69:8887, Unit 1, Modbus TCP
 py comcheck.py --mode rtu            # falls Gateway transparent (RTU über TCP)
 ```
 
+**Automatisch:** Nach jeder Änderung an einer `.py`-Datei durch Claude Code startet ein
+Hook (`.claude/settings.json` → `.claude/hooks/run_comcheck.py`) den Check und meldet das
+Ergebnis an Claude zurück. Deaktivieren/prüfen über `/hooks`.
+
 ## Änderungsprotokoll
 
 | Datum | Änderung |

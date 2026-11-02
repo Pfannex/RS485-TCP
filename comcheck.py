@@ -4,6 +4,8 @@ Beispiel:
     py comcheck.py
     py comcheck.py --host 192.168.1.69 --port 8887 --unit 1
     py comcheck.py --mode rtu          # falls das Gateway transparent arbeitet
+
+Läuft automatisch nach jeder Code-Änderung durch Claude (.claude/settings.json).
 """
 
 import argparse

@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/run_comcheck.py\"",
+            "timeout": 60,
+            "statusMessage": "comcheck.py läuft ..."
+          }
+        ]
+      }
+    ]
+  }
+}
