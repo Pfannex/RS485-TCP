@@ -214,6 +214,7 @@ Ergebnis an Claude zurück. Deaktivieren/prüfen über `/hooks`.
 | 2026-11-02 | **f802 = 1** bestätigt → alle FU-Parameter korrekt. Nächste Tests: Parität aus (f801 = 0 + Gateway NONE), Foto Buchse, ggf. USB-RS485-Adapter direkt am FU |
 | 2026-11-02 | **Gateway zeigt Parity NONE** – EVEN wurde offenbar nie gespeichert → Paritäts-Mismatch zum FU (Even) = wahrscheinliche Ursache |
 | 2026-11-02 | FU **f801 = 0** gesetzt (passend zu Gateway NONE). Test direkt danach: keine Antwort. FU-Neustart nötig; Polaritätstests waren wegen Paritäts-Mismatch ungültig → beide Polungen neu testen |
+| 2026-11-02 | Gateway 19200 8N1 + FU f801 = 0, beide neu gestartet → **weiterhin keine Antwort** (TCP/RTU, Unit 1/2/3/247, Toshiba-ASCII). Offen: Polung A+→4 erneut, Foto Buchse, USB-RS485-Direkttest |
 
 ## Fehlersuche: FU antwortet nicht
 
