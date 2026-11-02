@@ -205,6 +205,7 @@ Ergebnis an Claude zurück. Deaktivieren/prüfen über `/hooks`.
 | 2026-11-02 | f829 = 1 nach Neustart bestätigt. Weiter keine Antwort, Unit-Scan 1–32 + 247 leer → Protokoll/Adresse ausgeschlossen, offen: Verdrahtung, f800/f801, Gateway-TX |
 | 2026-11-02 | A+/B− getauscht → weiterhin keine Antwort (TCP + RTU, Unit 1/2/3/247). Nächste Schritte: TX-LED, f800/f801 ablesen, RJ45-Pins 4/5/8 durchmessen |
 | 2026-11-02 | Polling-Test: **TX-LED blinkt, RX-LED dunkel** → Gateway sendet, FU antwortet nicht. Offen: Leitung (Pins 4/5/8) oder f800/f801 |
+| 2026-11-02 | Messung Gateway-Klemmen A+↔B− beim Polling: **4,4 V DC, konstant** (Leitung wird getrieben; hoher Wert → evtl. offene Leitung). Nächster Schritt: Durchgangstest RJ45 Pin 4/5/8 ↔ Klemmen |
 
 ## Fehlersuche: FU antwortet nicht
 
