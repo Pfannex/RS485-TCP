@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.venv/
+
+# Herstellerhandbücher (Copyright) nicht veröffentlichen
+docs/*.pdf
