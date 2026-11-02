@@ -186,6 +186,17 @@ Testframe (RTU, Unit 1, FD00 lesen): `01 03 FD 00 00 01 B5 A6`
 - Gateway wird automatisch alle 3 s geprüft (Modbus-Port + Web-Port 80)
 - „Jetzt abfragen“ oder Polling mit einstellbarem Intervall
 - IP, Port, Unit, Modus (tcp/rtu) im Fenster änderbar; Werte-Tabelle und Log
+- Option „alle Monitore mitlesen“: Polling liest zusätzlich alle ~75 Monitor-Register
+- Reiter **Alle Register**:
+  - „Alle Monitore lesen“: alle dokumentierten Monitor-/Befehlsregister (~2,5 s)
+  - „Vollscan“: alle 1500 möglichen Adressen (0000–0999 Parameter, FA00–FE99
+    Monitor/Befehle), ~45 s. Nicht vorhandene Adressen (Exception 0x02) werden übersprungen.
+    Ergebnis 2026-11-02: **841 lesbare Register** (501 Parameter, 336 Monitor, 4 Befehl).
+  - Filter nach Bereich, „CSV exportieren“ nach `exports/` (nicht im Git) – z. B. als
+    Parameter-Sicherung des FU
+- Strom/Spannung werden zusätzlich in A/V umgerechnet, sobald Nennstrom (FE70) und
+  Nennspannung (FE71) gelesen wurden (Nennstrom 9,5 A, Nennspannung 400 V).
+- Parameter werden nur **gelesen**, die App schreibt nichts.
 
 **Kommandozeile:**
 
