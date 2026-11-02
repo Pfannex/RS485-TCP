@@ -209,6 +209,7 @@ Ergebnis an Claude zurück. Deaktivieren/prüfen über `/hooks`.
 | 2026-11-02 | 3-min-Polling: 561 Anfragen, 0 Antworten. Durchgang: A+ ↔ Pin 5, B− ↔ Pin 4 (getauschter Zustand) → Adern OK, **beide Polungen ohne Antwort getestet**. Offen: Pin 8 ↔ GND, Kurzschlusstest, f800/f801. Zurückverdrahten auf A+ → Pin 4, B− → Pin 5 |
 | 2026-11-02 | Pin 8 ↔ GND Durchgang, kein Kurzschluss 4↔5 → **Leitung vollständig OK**. Gateway-Modbus-Einstellungen geprüft, OK. Offen: f800/f801/f806 am Panel ablesen |
 | 2026-11-02 | Panel abgelesen: **f800 = 4, f801 = 1, f806 = 0** (alle korrekt). Verdacht: f802 noch 0 (Broadcast → keine Antwort) |
+| 2026-11-02 | **f802 = 1** bestätigt → alle FU-Parameter korrekt. Nächste Tests: Parität aus (f801 = 0 + Gateway NONE), Foto Buchse, ggf. USB-RS485-Adapter direkt am FU |
 
 ## Fehlersuche: FU antwortet nicht
 
@@ -219,3 +220,6 @@ Ergebnis an Claude zurück. Deaktivieren/prüfen über `/hooks`.
 5. f829 = 1, f802 = 1 gesetzt **und** FU danach aus/ein geschaltet.
 6. Antwortet der FU auf Toshiba-ASCII `(RFD00)\r`, stimmt die Physik und nur f829 fehlt.
 7. **f806** (Master/Slave Inter-Drive) muss 0/1/2 sein. Bei 3/4 ist der FU Master und antwortet nicht.
+8. Paritäts-Test: f801 = 0 (FU aus/ein) + Gateway Parity NONE. Schließt fehlerhafte
+   Paritätsumsetzung im Gateway aus.
+9. Gateway umgehen: USB-RS485-Adapter direkt an RJ45 Pin 4/5/8 → trennt Gateway- von FU-Problem.
