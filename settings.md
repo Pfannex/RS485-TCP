@@ -202,6 +202,7 @@ Ergebnis an Claude zurück. Deaktivieren/prüfen über `/hooks`.
 | 2026-11-02 | Gateway seriell auf 19200 8E1 umgestellt (passend zu FU-Werkseinstellung) |
 | 2026-11-02 | Kabel RJ45 → A+/B−/GND in Arbeit; FU-Parameter f829/f802 noch umzustellen |
 | 2026-11-02 | Erster Test mit FU an: **keine Antwort** (Modbus TCP + RTU, Unit 1–10, Toshiba-ASCII) bei 19200 8E1 → Verdacht Verdrahtung/Baudrate |
+| 2026-11-02 | f829 = 1 nach Neustart bestätigt. Weiter keine Antwort, Unit-Scan 1–32 + 247 leer → Protokoll/Adresse ausgeschlossen, offen: Verdrahtung, f800/f801, Gateway-TX |
 
 ## Fehlersuche: FU antwortet nicht
 
