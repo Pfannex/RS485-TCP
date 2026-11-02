@@ -26,9 +26,9 @@ TICK_REGISTER = 0xFD01       # Status 1
 HERE = os.path.dirname(os.path.abspath(__file__))
 EXPORT_DIR = os.path.join(HERE, "exports")
 POLL_FILE = os.path.join(HERE, "poll_list.json")
-def checkbox_image(checked, size=13):
-    """Kleine Checkbox-Grafik für die Treeview-Zeilen."""
-    img = tk.PhotoImage(width=size, height=size)
+def checkbox_image(checked, size=13, gap=6):
+    """Kleine Checkbox-Grafik für die Treeview-Zeilen (rechts transparenter Abstand zum Text)."""
+    img = tk.PhotoImage(width=size + gap, height=size)
     img.put("#ffffff", to=(0, 0, size, size))
     border = "#2f5597" if checked else "#7a7a7a"
     img.put(border, to=(0, 0, size, 1))
