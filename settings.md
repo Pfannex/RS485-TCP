@@ -122,6 +122,26 @@ Handbücher (Ordner `docs/`):
 - E6581611 (EN): Abschnitt 4.2 „How to set parameters“, Parametertabelle F-137.
 - E6581913 (EN, Kommunikation): Kap. 4 Modbus RTU, Kap. 7 Parameter, Kap. 8 Register.
 
+### Start über Binäreingang (Steuerklemmen)
+
+| Klemme | Funktion (Werk) |
+|---|---|
+| **F** | Vorwärts-Start: geschlossen = Lauf, offen = Stopp mit Rampe |
+| R | Rückwärts-Start |
+| RES | Störung quittieren |
+| S1–S3 | Festfrequenzen |
+| CC | 0 V Bezug |
+| P24 | interne 24 V (max. 100 mA inkl. +24) |
+
+- Beschaltung je nach Schiebeschalter **SW1**: SINK → Kontakt **F–CC**,
+  SOURCE → Kontakt **P24–F**, PLC (Werk) → externe 24 V über Klemme PLC.
+- Voraussetzung: **`cmod` = 0** (Klemmenleiste). Werk laut Tabelle: `cmod` = 1 (Panel, RUN-Taste).
+- ST (Standby) ist ab Werk immer aktiv (`f110` = 6), keine extra Freigabe nötig.
+- Frequenzquelle separat über `fmod`.
+- Ist-Zustand der Anlage (Belegung F/R/CC, SW1, cmod): **noch zu prüfen**.
+
+Quelle: E6581611 Abschnitt 2.3.2 „Control circuit terminals“, 5.x `cmod`/`fmod`.
+
 ---
 
 ## 6. Modbus-Register VF-S15
