@@ -201,3 +201,13 @@ Ergebnis an Claude zurück. Deaktivieren/prüfen über `/hooks`.
 | 2026-11-02 | ET69C02 gefunden (Werks-IP 192.168.3.7), DHCP → 192.168.1.69 |
 | 2026-11-02 | Gateway seriell auf 19200 8E1 umgestellt (passend zu FU-Werkseinstellung) |
 | 2026-11-02 | Kabel RJ45 → A+/B−/GND in Arbeit; FU-Parameter f829/f802 noch umzustellen |
+| 2026-11-02 | Erster Test mit FU an: **keine Antwort** (Modbus TCP + RTU, Unit 1–10, Toshiba-ASCII) bei 19200 8E1 → Verdacht Verdrahtung/Baudrate |
+
+## Fehlersuche: FU antwortet nicht
+
+1. Gateway-LEDs beim Polling: TX blinkt + RX dunkel → FU antwortet nicht; TX dunkel → Gateway sendet nicht.
+2. A+ / B− tauschen (häufigste Ursache, ungefährlich).
+3. Pins durchmessen: RJ45 Pin 4 → A+, Pin 5 → B−, Pin 8 → GND; richtige Buchse am FU.
+4. Am Panel prüfen: f800 = 4, f801 = 1 (passend zum Gateway).
+5. f829 = 1, f802 = 1 gesetzt **und** FU danach aus/ein geschaltet.
+6. Antwortet der FU auf Toshiba-ASCII `(RFD00)\r`, stimmt die Physik und nur f829 fehlt.
